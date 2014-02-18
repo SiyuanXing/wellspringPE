@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSV Files Recording System</title>
+    <script type="text/javascript" src="js/mysqliteDB.js"></script>
+</head>
+<body>
+<h1>Welcome to my project, you can manage the train lines information in this page!</h1>
+<hr>
+<p>Part1: Insert multiple data from loading a exist CSV.</p>
+<input type="file" id="files" name="files[]" multiple />
+<output id="list"></output>
+<p id="msgP1"></p>
+<table id="data_file" border="1"></table>
+<hr>
+<p>Part2: Insert data by typing the information.</p>
+<table>
+    <tr><td>TRAIN_LINE: </td><td><input type="text" id="trainLine"></td></tr>
+    <tr><td>ROUTE_NAME: </td><td><input type="text" id="routeName"></td></tr>
+    <tr><td>RUN_NUMBER: </td><td><input type="text" id="runNumber"></td></tr>
+    <tr><td>OPERATOR_ID: </td><td><input type="text" id="operatorID"></td></tr>
+    <tr>
+        <td></td>
+        <td><input type="button" value="Insert" onclick="insertData();"></td>
+    </tr>
+</table>
+<p id="msgP2"></p>
+<hr>
+<p>Part3: List all the information in the table.</p>
+<input type="button" value="Show tables" onclick="showTable();">
+<p id="msgP3"></p>
+<table id="data_table" border="1"></table>
+<script>
+    //initialize the database
+    var db = new DB('trainDB',1024*1024*2);
+    db.create();
+
+    //browse exist CSV file, and insert the value into database
+    function handleFileSelect(evt) {
+        var files = evt.target.files; // FileList object
+        if (files[0]) {
+        // files is a FileList of File objects. List some properties.
+            var f = files[0];
+            var reader = new FileReader();
+            reader.readAsText(f);
+
+            // Closure to capture the file information.
+            reader.onload = function(f) {
+
+                var data1 = document.getElementById("data_file");
+                //clean all element in table
+                for(var i=data1.rows.length-1;i>=0;i--){
+                    data1.deleteRow(i);
+                }
+                document.getElementById('msgP1').innerHTML = "";
+                var lines = reader.result.split("\n");
+                //Insert Title into table
+                var key;
+                var tr = document.createElement('tr');
+                var value = lines[0].split(",");
+                for (var m=0;m<value.length;m++){
+                    value[m] = value[m].trim();
+                }
+                if (value[0] == "TRAIN_LINE" && value[1] == "ROUTE_NAME" &&
+                        value[2] == "RUN_NUMBER" && value[3] == "OPERATOR_ID"){
+                    document.getElementById('msgP1').innerHTML = "List the data in the files.";
+                    for (var m=0;m<value.length;m++){
+                        var th=document.createElement('th');
+                        th.innerHTML= value[m];
+                        tr.appendChild(th);
+                    }
+                    data1.appendChild(tr);
+                    for (var i=1;i<lines.length;i++){
+                        if (lines[i]==null){
+                            continue;
+                        }
+
+                        var tr= document.createElement('tr');
+                        var value = lines[i].split(",");
+                        for (var j=0;j<value.length;j++){
+                            value[j] = value[j].trim();
+                            var th=document.createElement('th');
+                            th.innerHTML= value[j];
+                            tr.appendChild(th);
+                        }
+                        data1.appendChild(tr);
+                        db.addData(value[0],value[1],value[2],value[3]);
+                    }
+                }
+                else {
+                    var th=document.createElement('th');
+                    th.innerHTML= "Invalid Train CSV file, Cannot insert information into database!";
+                    tr.appendChild(th);
+                    data1.appendChild(tr);
+                }
+            }
+
+        }
+        return;
+    }
+    document.getElementById('files').addEventListener('change', handleFileSelect, false);
+    //insertDate into database
+    function insertData (){
+
+        db.addData(document.getElementById('trainLine').value,document.getElementById('routeName').value,
+                document.getElementById('runNumber').value,document.getElementById('operatorID').value);
+    }
+    function showTable (){
+
+        var data2 = document.getElementById("data_table");
+        for(var i=data2.rows.length-1;i>=0;i--){
+            data2.deleteRow(i);
+        }
+        document.getElementById('msgP3').innerHTML = "";
+        var rs;
+        rs = db.showAllData();
+        if  (rs.rows.length>0){
+            var tr= document.createElement('tr');
+            var th1=document.createElement('th');
+            var th2=document.createElement('th');
+            var th3=document.createElement('th');
+            var th4=document.createElement('th');
+            th1.innerHTML="TRAIN_LINE";
+            th2.innerHTML="ROUTE_NAME";
+            th3.innerHTML="RUN_NUMBER";
+            th4.innerHTML="OPERATOR_ID";
+            tr.appendChild(th1);
+            tr.appendChild(th2);
+            tr.appendChild(th3);
+            tr.appendChild(th4);
+            data2.appendChild(tr);
+        }
+    }
+</script>
+</body>
+</html>
