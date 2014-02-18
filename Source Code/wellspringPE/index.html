@@ -30,6 +30,9 @@
 <input type="button" value="Show tables" onclick="showTable();">
 <p id="msgP3"></p>
 <table id="data_table" border="1"></table>
+<hr>
+<p>Part4: Delete selected value.</p>
+<hr>
 <script>
     //initialize the database
     var db = new DB('trainDB',1024*1024*2);
@@ -49,13 +52,12 @@
 
                 var data1 = document.getElementById("data_file");
                 //clean all element in table
-                for(var i=data1.rows.length-1;i>=0;i--){
+                for(i=data1.rows.length-1;i>=0;i--){
                     data1.deleteRow(i);
                 }
                 document.getElementById('msgP1').innerHTML = "";
                 var lines = reader.result.split("\n");
                 //Insert Title into table
-                var key;
                 var tr = document.createElement('tr');
                 var value = lines[0].split(",");
                 for (var m=0;m<value.length;m++){
@@ -63,28 +65,28 @@
                 }
                 if (value[0] == "TRAIN_LINE" && value[1] == "ROUTE_NAME" &&
                         value[2] == "RUN_NUMBER" && value[3] == "OPERATOR_ID"){
-                    document.getElementById('msgP1').innerHTML = "List the data in the files.";
-                    for (var m=0;m<value.length;m++){
+                    document.getElementById('msgP1').innerHTML = "List the data in the files, which are inserted into DB!";
+                    for (var n=0;n<value.length;n++){
                         var th=document.createElement('th');
-                        th.innerHTML= value[m];
+                        th.innerHTML= value[n];
                         tr.appendChild(th);
                     }
                     data1.appendChild(tr);
-                    for (var i=1;i<lines.length;i++){
+                    for (i=1;i<lines.length;i++){
                         if (lines[i]==null){
                             continue;
                         }
 
                         var tr= document.createElement('tr');
-                        var value = lines[i].split(",");
-                        for (var j=0;j<value.length;j++){
-                            value[j] = value[j].trim();
+                        var value1 = lines[i].split(",");
+                        for (j=0;j<value1.length;j++){
+                            value1[j] = value1[j].trim();
                             var th=document.createElement('th');
-                            th.innerHTML= value[j];
+                            th.innerHTML= value1[j];
                             tr.appendChild(th);
                         }
                         data1.appendChild(tr);
-                        db.addData(value[0],value[1],value[2],value[3]);
+                        db.addData(value1[0],value1[1],value1[2],value1[3]);
                     }
                 }
                 else {
@@ -96,15 +98,24 @@
             }
 
         }
-        return;
     }
     document.getElementById('files').addEventListener('change', handleFileSelect, false);
     //insertDate into database
     function insertData (){
 
-        db.addData(document.getElementById('trainLine').value,document.getElementById('routeName').value,
-                document.getElementById('runNumber').value,document.getElementById('operatorID').value);
+        var a1 = document.getElementById('trainLine');
+        var a2 = document.getElementById('routeName');
+        var a3 = document.getElementById('runNumber');
+        var a4 = document.getElementById('operatorID');
+        db.addData(a1.value, a2.value, a3.value, a4.value);
+        a1.value = "";
+        a2.value = "";
+        a3.value = "";
+        a4.value = "";
+
+        showTable();
     }
+    //show all the data and sort by Run_number.
     function showTable (){
 
         var data2 = document.getElementById("data_table");
@@ -112,24 +123,69 @@
             data2.deleteRow(i);
         }
         document.getElementById('msgP3').innerHTML = "";
-        var rs;
-        rs = db.showAllData();
-        if  (rs.rows.length>0){
-            var tr= document.createElement('tr');
-            var th1=document.createElement('th');
-            var th2=document.createElement('th');
-            var th3=document.createElement('th');
-            var th4=document.createElement('th');
-            th1.innerHTML="TRAIN_LINE";
-            th2.innerHTML="ROUTE_NAME";
-            th3.innerHTML="RUN_NUMBER";
-            th4.innerHTML="OPERATOR_ID";
-            tr.appendChild(th1);
-            tr.appendChild(th2);
-            tr.appendChild(th3);
-            tr.appendChild(th4);
-            data2.appendChild(tr);
-        }
+
+        db.showAllData(function(ret){
+            if  (ret.length>0){
+
+                document.getElementById('msgP3').innerHTML = "List all the data in the table and sort by RUN_NUMBER.";
+
+                var tr= document.createElement('tr');
+                var th0=document.createElement('th');
+                var th1=document.createElement('th');
+                var th2=document.createElement('th');
+                var th3=document.createElement('th');
+                var th4=document.createElement('th');
+
+                th0.innerHTML="LINE";
+                th1.innerHTML="TRAIN_LINE";
+                th2.innerHTML="ROUTE_NAME";
+                th3.innerHTML="RUN_NUMBER";
+                th4.innerHTML="OPERATOR_ID";
+
+                tr.appendChild(th0);
+                tr.appendChild(th1);
+                tr.appendChild(th2);
+                tr.appendChild(th3);
+                tr.appendChild(th4);
+                data2.appendChild(tr);
+
+                var tr2= document.createElement('tr');
+                for (i=0;i< ret.length;i++){
+
+                    showData(ret[i],i+1);
+                }
+                data2.appendChild(tr2);
+                for(i=0;i<ret.rows.length;i++){
+                    showData(ret.rows.item[i])
+                }
+            }
+        });
+    }
+
+    function showData(row,i){
+        var tr= document.createElement('tr');
+
+        var th0=document.createElement('th');
+        var th1=document.createElement('th');
+        var th2=document.createElement('th');
+        var th3=document.createElement('th');
+        var th4=document.createElement('th');
+
+        th0.innerHTML= i;
+        th1.innerHTML= row.TRAIN_LINE;
+        th2.innerHTML= row.ROUTE_NAME;
+        th3.innerHTML= row.RUN_NUMBER;
+        th4.innerHTML= row.OPERATOR_ID;
+
+        tr.appendChild(th0);
+        tr.appendChild(th1);
+        tr.appendChild(th2);
+        tr.appendChild(th3);
+        tr.appendChild(th4);
+
+        var table = document.getElementById("data_table");
+        //让这个表格在后面加上这一行
+        table.appendChild(tr);
     }
 </script>
 </body>

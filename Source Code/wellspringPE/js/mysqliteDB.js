@@ -5,7 +5,7 @@
 
 var DB = function (db_name, size) {
     var _db = openDatabase(db_name, '1.0.0', 'SQLite DB for Sample Project of WellSpring', size);
-
+    var table = document.getElementById("data_table");
     return {
 
         /**
@@ -147,13 +147,11 @@ var DB = function (db_name, size) {
             this.query(sql, param, function (result) {
                 if (typeof callback == 'function') {
                     var out = [];
-
                     if (result.rows.length) {
                         for (var i = 0; i < result.rows.length; i++) {
                             out.push(result.rows.item(i));
                         }
                     }
-
                     callback(out);
                 }
             });
@@ -163,7 +161,9 @@ var DB = function (db_name, size) {
          * show all data in the table
          */
         showTables: function (table_name, callback) {
-            this.fetchAll("select * from sqlite_master where type='table' and name like ?", [table_name], callback);
+            //this.fetchAll("select * from sqlite_master where type='table' and name like ?", [table_name], callback);
+
+            this.fetchAll("select * from "+table_name, callback);
         },
 
 
@@ -200,20 +200,31 @@ var DB = function (db_name, size) {
                 "check(TRAIN_LINE in('El','Metra','Amtrak')))";
             this.query(createQuery);
         },
+
         addData: function (trainLine,routeName,runNumber,operatorID){
 
             var insertQuery = "INSERT INTO Train (TRAIN_LINE,ROUTE_NAME,RUN_NUMBER,OPERATOR_ID) VALUES('"
                 +trainLine+"','"+routeName+"','"+runNumber+"','"+operatorID+"')";
             this.query(insertQuery);
+            this.insert("Train",[])
         },
-        showAllData: function(){
-            _db.transaction(function(tx){
-                    tx.executeSql('SELECT * FROM InfoData',[],function(tx,rs){
-                        return rs;
-                    });
-                }
 
-            );
+        showAllData: function(callback){
+            this.fetchAll("select * from Train order by RUN_NUMBER", callback);
+        },
+
+        showData: function(row){
+            var tr= document.createElement('tr');
+            //创建第一列，这一列是姓名
+            for (i=i;i<row.length;i++){
+                var td1=document.createElement('td');
+                //填充第一列的信息为该行的name
+                td1.innerHTML=row.item[i];
+                tr.appendChild(td1);
+            }
+
+            //让这个表格在后面加上这一行
+            table.appendChild(tr);
         }
 
 
