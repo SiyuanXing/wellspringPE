@@ -2,62 +2,66 @@
 <html>
 <head>
     <title>CSV Files Recording System</title>
+    <link rel="stylesheet" type="text/css" href="style.css" media="all" />
     <script type="text/javascript" src="js/mysqliteDB.js"></script>
 </head>
 <body>
-<h2>Welcome to my project, you can manage the train lines information in this page!</h2>
-<hr>
-<h3>Part1: Insert multiple data by loading a exist CSV file.</h3>
-<input type="file" id="files" name="files[]" multiple />
-<output id="list"></output>
-<p id="msgP1"></p>
-<table id="data_file" border="1"></table>
-<hr>
-<h3>Part2: Insert data by typing the information.</h3>
-<p id="msgP2"></p>
-<table>
-    <tr><td>TRAIN_LINE: </td><td><input type="text" id="trainLine"></td></tr>
-    <tr><td>ROUTE_NAME: </td><td><input type="text" id="routeName"></td></tr>
-    <tr><td>RUN_NUMBER: </td><td><input type="text" id="runNumber"></td></tr>
-    <tr><td>OPERATOR_ID: </td><td><input type="text" id="operatorID"></td></tr>
-    <tr>
-        <td><input type="button" value="Insert" onclick="insertData();"></td>
-    </tr>
-</table>
-<hr>
-<h3>Part3: Read all data from table.</h3>
-<input type="button" value="READ TABLES" onclick="showTable();">
-<p id="msgP3"></p>
-<table id="data_table" border="1"></table>
-<hr>
-<h3>Part4: Update selected row.</h3>
-<p id="msgP4"></p>
-<p>Choose the row number to update
-    <select id="lineUpdate" >
-        <option value = ""></option>
-    </select>
-</p>
-<table>
-    <tr><td>TRAIN_LINE: </td><td><input type="text" id="trainLineUD"></td></tr>
-    <tr><td>ROUTE_NAME: </td><td><input type="text" id="routeNameUD"></td></tr>
-    <tr><td>RUN_NUMBER: </td><td><input type="text" id="runNumberUD"></td></tr>
-    <tr><td>OPERATOR_ID: </td><td><input type="text" id="operatorIDUD"></td></tr>
-</table>
-<p>
-    <input type="button" value="Update" onclick="updateRow();">
-</p>
-<hr>
-<h3>Part5: Delete selected row.</h3>
-<p id="msgP5"></p>
-<p>Choose the row number to delete
-    <select id="lineDelete" >
-        <option value = ""></option>
-    </select>
-</p>
-<p>
-    <input type="button" value="Delete" onclick="deleteRow();">
-</p>
-<hr>
+<div class="center">
+    <hr style="width:70%;text-align:left;margin-left:0" />
+    <h2>Welcome to my project, you can manage the train lines information in this page!</h2>
+    <hr style="width:70%;text-align:left;margin-left:0" />
+    <h3>Part1: Insert multiple data by loading a exist CSV file.</h3>
+    <input type="file" id="files" name="files[]" multiple />
+    <output id="list"></output>
+    <p id="msgP1"></p>
+    <table id="data_file" border="1"></table>
+    <hr style="width:70%;text-align:left;margin-left:0" />
+    <h3>Part2: Insert data by typing the information.</h3>
+    <p id="msgP2"></p>
+    <table>
+        <tr><td>TRAIN_LINE: </td><td><input type="text" id="trainLine"></td></tr>
+        <tr><td>ROUTE_NAME: </td><td><input type="text" id="routeName"></td></tr>
+        <tr><td>RUN_NUMBER: </td><td><input type="text" id="runNumber"></td></tr>
+        <tr><td>OPERATOR_ID: </td><td><input type="text" id="operatorID"></td></tr>
+        <tr>
+            <td><input type="button" value="Insert" onclick="insertData();"></td>
+        </tr>
+    </table>
+    <hr style="width:70%;text-align:left;margin-left:0" />
+    <h3>Part3: Read all data from table.</h3>
+    <input type="button" value="READ TABLES" onclick="showTable();">
+    <p id="msgP3"></p>
+    <table id="data_table" border="1"></table>
+    <hr style="width:70%;text-align:left;margin-left:0" />
+    <h3>Part4: Update selected row.</h3>
+    <p id="msgP4"></p>
+    <p>Choose the row number to update
+        <select id="lineUpdate" >
+            <option value = ""></option>
+        </select>
+    </p>
+    <table>
+        <tr><td>TRAIN_LINE: </td><td><input type="text" id="trainLineUD"></td></tr>
+        <tr><td>ROUTE_NAME: </td><td><input type="text" id="routeNameUD"></td></tr>
+        <tr><td>RUN_NUMBER: </td><td><input type="text" id="runNumberUD"></td></tr>
+        <tr><td>OPERATOR_ID: </td><td><input type="text" id="operatorIDUD"></td></tr>
+    </table>
+    <p>
+        <input type="button" value="Update" onclick="updateRow();">
+    </p>
+    <hr style="width:70%;text-align:left;margin-left:0" />
+    <h3>Part5: Delete selected row.</h3>
+    <p id="msgP5"></p>
+    <p>Choose the row number to delete
+        <select id="lineDelete" >
+            <option value = ""></option>
+        </select>
+    </p>
+    <p>
+        <input type="button" value="Delete" onclick="deleteRow();">
+    </p>
+    <hr style="width:70%;text-align:left;margin-left:0" />
+</div>
 <script>
     //initialize the database
     var db = new DB('trainDB',1024*1024*2);
@@ -158,6 +162,7 @@
             a3.value = "";
             a4.value = "";
 
+            msg.innerHTML = "Insert successful!"
             showTable();
         }
         else {
@@ -181,6 +186,7 @@
             if  (ret.length>0){
 
                 result = ret;
+                result.length = ret.length;
 
                 document.getElementById('msgP3').innerHTML = "List all the data in the table and sort by RUN_NUMBER.";
 
@@ -260,48 +266,53 @@
             var a2 = document.getElementById('routeNameUD');
             var a3 = document.getElementById('runNumberUD');
             var a4 = document.getElementById('operatorIDUD');
+            if(a1.value != ""||a2.value != ""||a3.value != ""||a4.value != ""){
 
-            var nameValue = [];
-            var dataValue = [];
-            if (a1.value != ""){
-                if  (a1.value.toLowerCase() != "el"&&a1.value.toLowerCase() != "metra"
-                        &&a1.value.toLowerCase() != "amtrak"){
-                    msg.innerHTML = "Invalid input in TRAIN_LINE, please check the value!";
-                    a1.value = "";
-                    return;
-                }
-                if (a1.value.toLowerCase() == "el"){
-                    dataValue.push("El");
-                }
-                if (a1.value.toLowerCase() == "metra"){
-                    dataValue.push("Metra");
-                }
-                if (a1.value.toLowerCase() == "amtrak"){
-                    dataValue.push("Amtrak");
-                }
-                nameValue.push("TRAIN_LINE");
+                var nameValue = [];
+                var dataValue = [];
+                if (a1.value != ""){
+                    if  (a1.value.toLowerCase() != "el"&&a1.value.toLowerCase() != "metra"
+                            &&a1.value.toLowerCase() != "amtrak"){
+                        msg.innerHTML = "Invalid input in TRAIN_LINE, please check the value!";
+                        a1.value = "";
+                        return;
+                    }
+                    if (a1.value.toLowerCase() == "el"){
+                        dataValue.push("El");
+                    }
+                    if (a1.value.toLowerCase() == "metra"){
+                        dataValue.push("Metra");
+                    }
+                    if (a1.value.toLowerCase() == "amtrak"){
+                        dataValue.push("Amtrak");
+                    }
+                    nameValue.push("TRAIN_LINE");
 
-            }
-            if (a2.value != ""){
-                nameValue.push("ROUTE_NAME");
-                dataValue.push(a2.value);
-            }
-            if (a3.value != ""){
-                nameValue.push("RUN_NUMBER");
-                dataValue.push(a3.value);
-            }
-            if (a4.value != ""){
-                nameValue.push("OPERATOR_ID");
-                dataValue.push(a4.value);
-            }
+                }
+                if (a2.value != ""){
+                    nameValue.push("ROUTE_NAME");
+                    dataValue.push(a2.value);
+                }
+                if (a3.value != ""){
+                    nameValue.push("RUN_NUMBER");
+                    dataValue.push(a3.value);
+                }
+                if (a4.value != ""){
+                    nameValue.push("OPERATOR_ID");
+                    dataValue.push(a4.value);
+                }
 
-            db.update(nameValue,dataValue,result[text-1].RUN_NUMBER);
-            a1.value = "";
-            a2.value = "";
-            a3.value = "";
-            a4.value = "";
+                db.updateRow(nameValue,dataValue,result[text-1].RUN_NUMBER);
+                a1.value = "";
+                a2.value = "";
+                a3.value = "";
+                a4.value = "";
 
-            showTable();
+                showTable();
+            }
+            else{
+                msg.innerHTML = "Please make sure not all the blocks are empty!";
+            }
         }
         else {
             msg.innerHTML = "";
@@ -325,7 +336,25 @@
             msg.innerHTML = "";
         }
 
+    }
 
+    //save all data in the table to a CSV file.
+    function saveAs(){
+
+        var info = "TRAIN_LINE, ROUTE_NAME, RUN_NUMBER, OPERATOR_ID \r\n"
+        for(var i=0;i<result.length;i++){
+            info += result[i].TRAIN_LINE +", "+ result[i].ROUTE_NAME +", "+ result[i].RUN_NUMBER +", "+ result[i].OPERATOR_ID + " \r\n";
+        }
+        var blob = new Blob([info]);
+        var url = webkitURL.createObjectURL(blob);
+        var save_link = document.createElementNS('http://index.html', 'a');
+        save_link.href = url;
+        save_link.download = "hello world.txt";
+
+        var event = document.createEvent('MouseEvents');
+        event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        save_link.dispatchEvent(event);
+        //URL.revokeObjectURL(url);
 
     }
 </script>

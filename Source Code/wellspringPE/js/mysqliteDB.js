@@ -216,7 +216,7 @@ var DB = function (db_name, size) {
         },
 
         //Update selected row
-        update: function(column, data, runNumber){
+        updateRow: function(column, data, runNumber){
 
             var set = "";
             for (i =0;i<column.length-1;i++){
