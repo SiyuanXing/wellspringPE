@@ -171,7 +171,7 @@ var DB = function (db_name, size) {
         mkWhere: function (data) {
             var arr = [];
             var param = [];
-            if (typeof data === 'object') {
+            if (typeof data == 'object') {
                 for (var i in data) {
                     arr.push(i + "=?");
                     param.push(data[i]);
@@ -194,7 +194,7 @@ var DB = function (db_name, size) {
         //Create table
         create: function (){
 
-            var createQuery = "CREATE TABLE Train (id integer primary key autoincrement, "+
+            var createQuery = "create table if not exists Train (id integer primary key autoincrement, "+
                 "TRAIN_LINE text not null, ROUTE_NAME text not null, " +
                 "RUN_NUMBER text not null unique, OPERATOR_ID text not null, "+
                 "check(TRAIN_LINE in('El','Metra','Amtrak')))";
@@ -204,17 +204,31 @@ var DB = function (db_name, size) {
         //insert rows
         addData: function (trainLine,routeName,runNumber,operatorID){
 
-            var insertQuery = "INSERT INTO Train (TRAIN_LINE,ROUTE_NAME,RUN_NUMBER,OPERATOR_ID) VALUES('"
+            var insertQuery = "insert into Train (TRAIN_LINE,ROUTE_NAME,RUN_NUMBER,OPERATOR_ID) VALUES('"
                 +trainLine+"','"+routeName+"','"+runNumber+"','"+operatorID+"')";
             this.query(insertQuery);
         },
 
         //Read Table
         showAllData: function(callback){
+
             this.fetchAll("select * from Train order by RUN_NUMBER", callback);
         },
 
-        //Delete Table
+        //Update selected row
+        update: function(column, data, runNumber){
+
+            var set = "";
+            for (i =0;i<column.length-1;i++){
+                set += column[i]+" = "+"'"+data[i]+"', ";
+            }
+            set += column[i]+" = "+"'"+data[i]+"' ";
+            var updateQuery = "update train set "+ set + " where RUN_NUMBER = '"+runNumber+"'";
+            this.query(updateQuery);
+
+        },
+
+        //Delete selected row
         deleteRow: function(value){
 
             var deleteQuery = "Delete From Train where RUN_NUMBER = '"+value+"'";
