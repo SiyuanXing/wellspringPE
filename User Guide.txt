@@ -1,0 +1,17 @@
+Introduction of my Project:
+
+This project mainly use HTML+JS+CSS, connect with SQLite databases base on HTML5 technology. I don’t use traditional SQL Database because of the use cannot use it if I create a local database server. And I don’t have a real server to work for this project. And SQLite is a stand-alone database and store the data in your browser(Chrome, Safari, IE) by a local db file. So anyone can use the database I created.
+
+Tips of using my project:
+
+1. Click “index.html” to open it in ./Source Code/wellspringPE/
+
+2. Loading a CSV file in local drive to insert multiple data.(Part1)
+
+3. Insert one record into database by typing the value.(Part2)
+
+4. Read tables in database, list all the data and sort by RUN_NUMBER.(Part3)
+
+5. Choose one row from Part3, update the information by input the value. You can change any column you want. Keep the block empty means don’t change this value.
+
+6. Choose one row from Part3, and delete it.
