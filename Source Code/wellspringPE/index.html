@@ -5,38 +5,64 @@
     <script type="text/javascript" src="js/mysqliteDB.js"></script>
 </head>
 <body>
-<h1>Welcome to my project, you can manage the train lines information in this page!</h1>
+<h2>Welcome to my project, you can manage the train lines information in this page!</h2>
 <hr>
-<p>Part1: Insert multiple data from loading a exist CSV.</p>
+<h3>Part1: Insert multiple data from loading a exist CSV.</h3>
 <input type="file" id="files" name="files[]" multiple />
 <output id="list"></output>
 <p id="msgP1"></p>
 <table id="data_file" border="1"></table>
 <hr>
-<p>Part2: Insert data by typing the information.</p>
+<h3>Part2: Insert data by typing the information.</h3>
 <table>
     <tr><td>TRAIN_LINE: </td><td><input type="text" id="trainLine"></td></tr>
     <tr><td>ROUTE_NAME: </td><td><input type="text" id="routeName"></td></tr>
     <tr><td>RUN_NUMBER: </td><td><input type="text" id="runNumber"></td></tr>
     <tr><td>OPERATOR_ID: </td><td><input type="text" id="operatorID"></td></tr>
     <tr>
-        <td></td>
         <td><input type="button" value="Insert" onclick="insertData();"></td>
     </tr>
 </table>
 <p id="msgP2"></p>
 <hr>
-<p>Part3: List all the information in the table.</p>
-<input type="button" value="Show tables" onclick="showTable();">
+<h3>Part3: List all the information in the table.</h3>
+<input type="button" value="READ TABLES" onclick="showTable();">
 <p id="msgP3"></p>
 <table id="data_table" border="1"></table>
 <hr>
-<p>Part4: Delete selected value.</p>
+<h3>Part4: Delete selected row.</h3>
+<p id="msgP4"></p>
+<p>Choose the row number to update
+    <select id="lineUpdate" >
+        <option value = ""></option>
+    </select>
+</p>
+<table>
+    <tr><td>TRAIN_LINE: </td><td><input type="text" id="trainLineUD"></td></tr>
+    <tr><td>ROUTE_NAME: </td><td><input type="text" id="routeNameUD"></td></tr>
+    <tr><td>RUN_NUMBER: </td><td><input type="text" id="runNumberUD"></td></tr>
+    <tr><td>OPERATOR_ID: </td><td><input type="text" id="operatorIDUD"></td></tr>
+</table>
+<p>
+    <input type="button" value="Update" onclick="deleteRow();">
+</p>
+<hr>
+<h3>Part5: Delete selected row.</h3>
+<p id="msgP5"></p>
+<p>Choose the row number to delete
+    <select id="lineDelete" >
+        <option value = ""></option>
+    </select>
+</p>
+<p>
+    <input type="button" value="Delete" onclick="deleteRow();">
+</p>
 <hr>
 <script>
     //initialize the database
     var db = new DB('trainDB',1024*1024*2);
     db.create();
+    var result;
 
     //browse exist CSV file, and insert the value into database
     function handleFileSelect(evt) {
@@ -122,10 +148,15 @@
         for(var i=data2.rows.length-1;i>=0;i--){
             data2.deleteRow(i);
         }
+        document.getElementById('lineUpdate').length = 1;
+        document.getElementById('lineDelete').length = 1;
         document.getElementById('msgP3').innerHTML = "";
 
         db.showAllData(function(ret){
+            result = "";
             if  (ret.length>0){
+
+                result = ret;
 
                 document.getElementById('msgP3').innerHTML = "List all the data in the table and sort by RUN_NUMBER.";
 
@@ -149,19 +180,15 @@
                 tr.appendChild(th4);
                 data2.appendChild(tr);
 
-                var tr2= document.createElement('tr');
                 for (i=0;i< ret.length;i++){
 
                     showData(ret[i],i+1);
                 }
-                data2.appendChild(tr2);
-                for(i=0;i<ret.rows.length;i++){
-                    showData(ret.rows.item[i])
-                }
+
             }
         });
     }
-
+    //Add one row into table
     function showData(row,i){
         var tr= document.createElement('tr');
 
@@ -184,8 +211,34 @@
         tr.appendChild(th4);
 
         var table = document.getElementById("data_table");
-        //让这个表格在后面加上这一行
         table.appendChild(tr);
+
+        //add option into the selection of Update and Delete
+        var rowSelect1 = document.getElementById('lineUpdate');
+        var rowSelect2 = document.getElementById('lineDelete');
+        var option1 = document.createElement("option");
+        var option2 = document.createElement("option");
+        option1.innerHTML = i;
+        option2.innerHTML = i;
+        rowSelect1.appendChild(option1);
+        rowSelect2.appendChild(option2);
+    }
+    //delete the selected row
+    function deleteRow(){
+        var onChoose = document.getElementById('line');
+        var text = onChoose.selectedIndex;
+        var msg = document.getElementById('msgP5');
+        if (text>0){
+
+            msg.innerHTML = "The "+text+" row has been deleted!";
+        }
+        else {
+            msg.innerHTML = "";
+        }
+
+        db.deleteRow(result[text-1].RUN_NUMBER);
+        showTable();
+
     }
 </script>
 </body>

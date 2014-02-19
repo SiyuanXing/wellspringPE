@@ -9,7 +9,7 @@ var DB = function (db_name, size) {
     return {
 
         /**
-         * execute the sqlite database, return callback
+         * execute the sqlite database, return callback function
          */
         execute: function (sql, param, callback) {
             if (!param) {
@@ -28,13 +28,11 @@ var DB = function (db_name, size) {
 
         /**
          * Execute query return
-         * 查询时，有数据返回数组，无数据返回0
-         * 增删改时：返回int，影响条数
          * void query( string[, function])
          * void query( string[, array[, function]])
          */
         query: function (sql, param, callback) {
-            //参数处理
+
             if (!param) {
                 param = [];
             } else if (typeof param == 'function') {
@@ -54,7 +52,7 @@ var DB = function (db_name, size) {
             })
         },
         /**
-         * 插入，回调返回last id
+         * insert, return id
          * void insert( string, object[, function])
          */
         insert: function (table, data, callback) {
@@ -79,7 +77,7 @@ var DB = function (db_name, size) {
             });
         },
         /**
-         * 修改，回调返回影响条数
+         * update table
          * void update( string, object[, string[, function]])
          * void update( string, object[, string[, array[, function]]])
          */
@@ -109,7 +107,7 @@ var DB = function (db_name, size) {
         },
 
         /**
-         * 删除
+         * Delete
          * void toDelete( string, string[, function]])
          * void toDelete( string, string[, array[, function]])
          */
@@ -131,7 +129,7 @@ var DB = function (db_name, size) {
         },
 
         /**
-         * 查询，回调返回结果集数组
+         * select all data from table
          * void fetch_all( string[, function] )
          * void fetch_all( string[, param[, function]] )
          */
@@ -168,7 +166,7 @@ var DB = function (db_name, size) {
 
 
         /**
-         * 组装查询条件
+         * Packaging the select factors
          */
         mkWhere: function (data) {
             var arr = [];
@@ -191,9 +189,11 @@ var DB = function (db_name, size) {
         },
 
         /**
-         * Create the new table
+         *  CRUD function for 'Train' Table
          */
+        //Create table
         create: function (){
+
             var createQuery = "CREATE TABLE Train (id integer primary key autoincrement, "+
                 "TRAIN_LINE text not null, ROUTE_NAME text not null, " +
                 "RUN_NUMBER text not null unique, OPERATOR_ID text not null, "+
@@ -201,57 +201,26 @@ var DB = function (db_name, size) {
             this.query(createQuery);
         },
 
+        //insert rows
         addData: function (trainLine,routeName,runNumber,operatorID){
 
             var insertQuery = "INSERT INTO Train (TRAIN_LINE,ROUTE_NAME,RUN_NUMBER,OPERATOR_ID) VALUES('"
                 +trainLine+"','"+routeName+"','"+runNumber+"','"+operatorID+"')";
             this.query(insertQuery);
-            this.insert("Train",[])
         },
 
+        //Read Table
         showAllData: function(callback){
             this.fetchAll("select * from Train order by RUN_NUMBER", callback);
         },
 
-        showData: function(row){
-            var tr= document.createElement('tr');
-            //创建第一列，这一列是姓名
-            for (i=i;i<row.length;i++){
-                var td1=document.createElement('td');
-                //填充第一列的信息为该行的name
-                td1.innerHTML=row.item[i];
-                tr.appendChild(td1);
-            }
+        //Delete Table
+        deleteRow: function(value){
 
-            //让这个表格在后面加上这一行
-            table.appendChild(tr);
+            var deleteQuery = "Delete From Train where RUN_NUMBER = '"+value+"'";
+            this.query(deleteQuery);
         }
 
 
     }
 };
-
-/*
- //使用示例：
- //1.获取db对象,连接数据库 test，分配2M大小
- var db = new DB('test',1024*1024*2);
-
- //2.创建表
- db.query("CREATE TABLE ids (id integer primary key autoincrement , ctime integer)");
-
- //3.查看已经创建的表，支持表名通配符搜索。如："%"查询所有表，"user_%"查询"user_"开头的表
- db.showTables("%",function(ret){console.log(ret)})
-
- //4.查询表里数据
- db.fetchAll('select * from ids',function(ret){console.log(ret)});
-
- //5.修改
- db.update('ids',{ctime:123},"id=?",[1],function(ret){console.log(ret)});
-
- //6.删除
- db.toDelete('ids',"id=?",[1],function(ret){console.log(ret)});
-
- //7.其它，如删表
- db.query('drop table ids');
-
- */
