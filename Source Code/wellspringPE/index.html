@@ -32,6 +32,10 @@
     <input type="button" value="READ TABLES" onclick="showTable();">
     <p id="msgP3"></p>
     <table id="data_table" border="1"></table>
+    <p>Filename to Save As:
+        <input id="fileName"/>
+        <button onclick="saveAs()">Save Data</button>
+    </p>
     <hr style="width:70%;text-align:left;margin-left:0" />
     <h3>Part4: Update selected row.</h3>
     <p id="msgP4"></p>
@@ -338,23 +342,38 @@
 
     }
 
-    //save all data in the table to a CSV file.
+    //save all data in the table to a CSV/txt file.
     function saveAs(){
 
+        //store all the data info into
         var info = "TRAIN_LINE, ROUTE_NAME, RUN_NUMBER, OPERATOR_ID \r\n"
         for(var i=0;i<result.length;i++){
             info += result[i].TRAIN_LINE +", "+ result[i].ROUTE_NAME +", "+ result[i].RUN_NUMBER +", "+ result[i].OPERATOR_ID + " \r\n";
         }
-        var blob = new Blob([info]);
-        var url = webkitURL.createObjectURL(blob);
-        var save_link = document.createElementNS('http://index.html', 'a');
-        save_link.href = url;
-        save_link.download = "hello world.txt";
 
-        var event = document.createEvent('MouseEvents');
-        event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-        save_link.dispatchEvent(event);
-        //URL.revokeObjectURL(url);
+        var textFileAsBlob = new Blob([info], {type:'text/plain'});
+        var fileNameToSaveAs = document.getElementById("fileName").value;
+
+        var downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.innerHTML = "Download File";
+        if (window.webkitURL != null)
+        {
+            // Chrome allows the link to be clicked
+            // without actually adding it to the DOM.
+            downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+        }
+        else
+        {
+            // Firefox requires the link to be added to the DOM
+            // before it can be clicked.
+            downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+            downloadLink.onclick = destroyClickedElement;
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+        }
+
+        downloadLink.click();
 
     }
 </script>
