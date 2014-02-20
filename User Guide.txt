@@ -10,8 +10,8 @@ Tips of using my project:
 
 3. Insert one record into database by typing the value.(Part2)
 
-4. Read tables in database, list all the data and sort by RUN_NUMBER.(Part3)
+4. Read tables in database, list all the data and sort by RUN_NUMBER. All the data can be saved as a txt file.(Part3)
 
-5. Choose one row from Part3, update the information by input the value. You can change any column you want. Keep the block empty means don’t change this value.
+5. Choose one row from Part3, update the information by input the value. You can change any column you want. Keep the block empty means don’t change this value.(Part4)
 
-6. Choose one row from Part3, and delete it.
+6. Choose one row from Part3, and delete it.(Part5)
